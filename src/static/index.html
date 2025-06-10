@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JBM Trader - API de Dados em Tempo Real</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .status-panel {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .status-online {
+            background-color: #4CAF50;
+            box-shadow: 0 0 10px #4CAF50;
+        }
+        
+        .status-offline {
+            background-color: #f44336;
+            box-shadow: 0 0 10px #f44336;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        .btn.stop {
+            background: linear-gradient(45deg, #f44336, #da190b);
+        }
+        
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .data-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .data-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .symbol {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #FFD700;
+        }
+        
+        .price {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .change {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        .positive {
+            color: #4CAF50;
+        }
+        
+        .negative {
+            color: #f44336;
+        }
+        
+        .timestamp {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-top: 10px;
+        }
+        
+        .source {
+            font-size: 0.8rem;
+            opacity: 0.6;
+            background: rgba(255,255,255,0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2rem;
+        }
+        
+        .api-info {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .api-endpoints {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .endpoint {
+            background: rgba(0,0,0,0.2);
+            padding: 10px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 JBM Trader API</h1>
+            <p>Sistema de Dados de Mercado em Tempo Real</p>
+        </div>
+        
+        <div class="status-panel">
+            <h3>
+                <span id="status-indicator" class="status-indicator status-offline"></span>
+                Status da Conexão: <span id="connection-status">Desconectado</span>
+            </h3>
+            <p>Última atualização: <span id="last-update">Nunca</span></p>
+            <p>Símbolos em cache: <span id="symbol-count">0</span></p>
+        </div>
+        
+        <div class="controls">
+            <button class="btn" onclick="startUpdates()">▶️ Iniciar Atualizações</button>
+            <button class="btn stop" onclick="stopUpdates()">⏹️ Parar Atualizações</button>
+            <button class="btn" onclick="refreshData()">🔄 Atualizar Dados</button>
+            <button class="btn" onclick="checkStatus()">📊 Verificar Status</button>
+        </div>
+        
+        <div id="data-container">
+            <div class="loading">
+                <p>🔄 Carregando dados de mercado...</p>
+                <p>Conectando ao servidor WebSocket...</p>
+            </div>
+        </div>
+        
+        <div class="api-info">
+            <h3>📡 Endpoints da API</h3>
+            <div class="api-endpoints">
+                <div class="endpoint">GET /api/market/all</div>
+                <div class="endpoint">GET /api/market/quote/{symbols}</div>
+                <div class="endpoint">GET /api/market/status</div>
+                <div class="endpoint">GET /api/market/start</div>
+                <div class="endpoint">GET /api/market/stop</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuração do Socket.IO
+        const socket = io();
+        let marketData = {};
+        
+        // Event listeners do Socket.IO
+        socket.on('connect', function() {
+            console.log('Conectado ao servidor WebSocket');
+            updateConnectionStatus(true);
+            refreshData();
+        });
+        
+        socket.on('disconnect', function() {
+            console.log('Desconectado do servidor WebSocket');
+            updateConnectionStatus(false);
+        });
+        
+        socket.on('market_update', function(data) {
+            console.log('Dados de mercado recebidos:', data);
+            marketData = data.data;
+            updateLastUpdate(data.timestamp);
+            renderMarketData();
+        });
+        
+        // Funções de controle
+        function updateConnectionStatus(connected) {
+            const indicator = document.getElementById('status-indicator');
+            const status = document.getElementById('connection-status');
+            
+            if (connected) {
+                indicator.className = 'status-indicator status-online';
+                status.textContent = 'Conectado';
+            } else {
+                indicator.className = 'status-indicator status-offline';
+                status.textContent = 'Desconectado';
+            }
+        }
+        
+        function updateLastUpdate(timestamp) {
+            const lastUpdate = document.getElementById('last-update');
+            if (timestamp) {
+                const date = new Date(timestamp);
+                lastUpdate.textContent = date.toLocaleString('pt-BR');
+            }
+        }
+        
+        function updateSymbolCount() {
+            const count = document.getElementById('symbol-count');
+            count.textContent = Object.keys(marketData).length;
+        }
+        
+        function renderMarketData() {
+            const container = document.getElementById('data-container');
+            
+            if (Object.keys(marketData).length === 0) {
+                container.innerHTML = '<div class="loading"><p>📊 Nenhum dado disponível</p></div>';
+                return;
+            }
+            
+            const html = `
+                <div class="data-grid">
+                    ${Object.values(marketData).map(item => `
+                        <div class="data-card">
+                            <div class="symbol">${item.symbol}</div>
+                            <div class="price">R$ ${formatNumber(item.price)}</div>
+                            <div class="change ${item.change >= 0 ? 'positive' : 'negative'}">
+                                ${item.change >= 0 ? '+' : ''}${formatNumber(item.change)} 
+                                (${item.changePercent >= 0 ? '+' : ''}${formatNumber(item.changePercent)}%)
+                            </div>
+                            ${item.volume ? `<div>Volume: ${formatNumber(item.volume)}</div>` : ''}
+                            <div class="source">${item.source}</div>
+                            <div class="timestamp">${new Date(item.timestamp).toLocaleString('pt-BR')}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            container.innerHTML = html;
+            updateSymbolCount();
+        }
+        
+        function formatNumber(num) {
+            if (typeof num !== 'number') return num;
+            return num.toLocaleString('pt-BR', { 
+                minimumFractionDigits: 2, 
+                maximumFractionDigits: 2 
+            });
+        }
+        
+        // Funções de API
+        async function startUpdates() {
+            try {
+                const response = await fetch('/api/market/start');
+                const data = await response.json();
+                console.log('Atualizações iniciadas:', data);
+                setTimeout(refreshData, 1000);
+            } catch (error) {
+                console.error('Erro ao iniciar atualizações:', error);
+            }
+        }
+        
+        async function stopUpdates() {
+            try {
+                const response = await fetch('/api/market/stop');
+                const data = await response.json();
+                console.log('Atualizações paradas:', data);
+            } catch (error) {
+                console.error('Erro ao parar atualizações:', error);
+            }
+        }
+        
+        async function refreshData() {
+            try {
+                const response = await fetch('/api/market/all');
+                const data = await response.json();
+                if (data.success) {
+                    marketData = data.data;
+                    updateLastUpdate(data.timestamp);
+                    renderMarketData();
+                }
+            } catch (error) {
+                console.error('Erro ao atualizar dados:', error);
+            }
+        }
+        
+        async function checkStatus() {
+            try {
+                const response = await fetch('/api/market/status');
+                const data = await response.json();
+                console.log('Status do serviço:', data);
+                alert(`Status: ${data.running ? 'Ativo' : 'Inativo'}\nÚltima atualização: ${data.last_update || 'Nunca'}\nSímbolos: ${data.cached_symbols.length}`);
+            } catch (error) {
+                console.error('Erro ao verificar status:', error);
+            }
+        }
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshData();
+        });
+    </script>
+</body>
+</html>
+
