@@ -1,4 +1,5 @@
-fastapi
-uvicorn
-requests
 flask
+flask-socketio
+flask-cors
+gunicorn
+eventlet
