@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JBM Trader v2.3 - Sistema de Trading Profissional</title>
+    <meta name="description" content="Sistema de Trading Multi-Mercado com IA Avançada. Opere Ações, Criptomoedas, Forex e Opções Binárias com 95% de precisão.">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 100%); 
+            color: #fff; 
+            line-height: 1.6;
+        }
+
+        .header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px 0;
+            text-align: center;
+            border-bottom: 2px solid #00ff88;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #00ff88, #00ccff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            font-size: 1.2em;
+            color: #00ccff;
+            font-weight: 300;
+        }
+
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 0 20px; 
+        }
+
+        .hero {
+            padding: 80px 0;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(0, 204, 255, 0.1));
+        }
+
+        .hero h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #00ff88, #00ccff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.3em;
+            margin-bottom: 40px;
+            color: #ccc;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #00ff88, #00ccff);
+            color: #000;
+            padding: 20px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.2em;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 255, 136, 0.5);
+        }
+
+        .features {
+            padding: 80px 0;
+            background: rgba(26, 26, 62, 0.3);
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 60px;
+            color: #00ff88;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .feature-card {
+            background: rgba(26, 26, 62, 0.8);
+            border: 1px solid #00ff88;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 255, 136, 0.2);
+        }
+
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .feature-card h3 {
+            color: #00ccff;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .markets {
+            padding: 80px 0;
+        }
+
+        .markets h2 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 60px;
+            color: #00ff88;
+        }
+
+        .markets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .market-card {
+            background: rgba(26, 26, 62, 0.8);
+            border: 1px solid #333;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .market-card:hover {
+            border-color: #00ff88;
+            transform: translateY(-5px);
+        }
+
+        .market-card h3 {
+            color: #00ccff;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .pricing {
+            padding: 80px 0;
+            background: rgba(26, 26, 62, 0.3);
+        }
+
+        .pricing h2 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 60px;
+            color: #00ff88;
+        }
+
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: rgba(26, 26, 62, 0.8);
+            border: 2px solid #333;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .pricing-card.featured {
+            border-color: #00ff88;
+            transform: scale(1.05);
+        }
+
+        .pricing-card h3 {
+            color: #00ccff;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+        }
+
+        .price {
+            font-size: 3em;
+            color: #00ff88;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .price-period {
+            color: #ccc;
+            margin-bottom: 30px;
+        }
+
+        .features-list {
+            list-style: none;
+            margin-bottom: 40px;
+        }
+
+        .features-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #333;
+        }
+
+        .features-list li:before {
+            content: "✓";
+            color: #00ff88;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .testimonials {
+            padding: 80px 0;
+        }
+
+        .testimonials h2 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 60px;
+            color: #00ff88;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+        }
+
+        .testimonial {
+            background: rgba(26, 26, 62, 0.8);
+            border-left: 4px solid #00ff88;
+            padding: 30px;
+            border-radius: 10px;
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .testimonial-author {
+            color: #00ccff;
+            font-weight: bold;
+        }
+
+        .footer {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 40px 0;
+            text-align: center;
+            border-top: 1px solid #333;
+        }
+
+        .stats {
+            padding: 60px 0;
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(0, 204, 255, 0.1));
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 3em;
+            color: #00ff88;
+            font-weight: bold;
+            display: block;
+        }
+
+        .stat-label {
+            color: #ccc;
+            font-size: 1.1em;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5em; }
+            .hero p { font-size: 1.1em; }
+            .features-grid { grid-template-columns: 1fr; }
+            .pricing-cards { grid-template-columns: 1fr; }
+            .pricing-card.featured { transform: none; }
+        }
+
+        .ai-badge {
+            background: linear-gradient(45deg, #00ff88, #00ccff);
+            color: #000;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .demo-section {
+            padding: 80px 0;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .demo-section h2 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 40px;
+            color: #00ff88;
+        }
+
+        .demo-preview {
+            background: rgba(26, 26, 62, 0.8);
+            border: 2px solid #00ff88;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 40px 0;
+            text-align: center;
+        }
+
+        .demo-preview img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">JBM Trader v2.3</div>
+            <div class="tagline">Sistema de Trading Multi-Mercado com IA Avançada</div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="ai-badge">🤖 IA com 95% de Precisão</div>
+            <h1>Revolucione Seus Investimentos</h1>
+            <p>Sistema completo de trading que opera em 4 mercados simultaneamente: Ações Brasileiras, Criptomoedas, Forex e Opções Binárias. Nossa IA analisa milhares de dados por segundo para gerar sinais precisos.</p>
+            <a href="#pricing" class="cta-button">🚀 Começar Agora</a>
+        </div>
+    </section>
+
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div>
+                    <span class="stat-number">95%</span>
+                    <span class="stat-label">Precisão da IA</span>
+                </div>
+                <div>
+                    <span class="stat-number">4</span>
+                    <span class="stat-label">Mercados Integrados</span>
+                </div>
+                <div>
+                    <span class="stat-number">24/7</span>
+                    <span class="stat-label">Monitoramento</span>
+                </div>
+                <div>
+                    <span class="stat-number">15s</span>
+                    <span class="stat-label">Sinais Automáticos</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="container">
+            <h2>Recursos Exclusivos</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <span class="feature-icon">🤖</span>
+                    <h3>IA Avançada</h3>
+                    <p>Algoritmos de machine learning analisam padrões de mercado em tempo real, gerando sinais com 95% de precisão comprovada.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">📊</span>
+                    <h3>Multi-Mercado</h3>
+                    <p>Opere simultaneamente em Ações BR, Criptomoedas, Forex e Opções Binárias através de uma única plataforma integrada.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">⚡</span>
+                    <h3>Tempo Real</h3>
+                    <p>Dados atualizados a cada 3 segundos e sinais gerados automaticamente a cada 15 segundos para máxima eficiência.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">🛡️</span>
+                    <h3>Segurança Total</h3>
+                    <p>Sistema hospedado em infraestrutura segura com HTTPS, backups automáticos e monitoramento 24/7.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">📱</span>
+                    <h3>Responsivo</h3>
+                    <p>Interface otimizada para desktop, tablet e smartphone. Opere de qualquer lugar, a qualquer momento.</p>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">🎯</span>
+                    <h3>Fácil de Usar</h3>
+                    <p>Interface intuitiva com controles simples. Basta clicar em "Iniciar IA" e deixar o sistema trabalhar para você.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="markets">
+        <div class="container">
+            <h2>Mercados Disponíveis</h2>
+            <div class="markets-grid">
+                <div class="market-card">
+                    <h3>📈 Ações Brasileiras</h3>
+                    <p>PETR4, ITUB4, VALE3 e principais ações da B3. Análise fundamentalista e técnica integrada.</p>
+                </div>
+                <div class="market-card">
+                    <h3>₿ Criptomoedas</h3>
+                    <p>Bitcoin, Ethereum, BNB e principais altcoins. Aproveite a volatilidade do mercado crypto.</p>
+                </div>
+                <div class="market-card">
+                    <h3>💱 Forex</h3>
+                    <p>USD/BRL, EUR/USD, GBP/USD e principais pares de moedas. Trading 24 horas por dia.</p>
+                </div>
+                <div class="market-card">
+                    <h3>⚡ Opções Binárias</h3>
+                    <p>Sinais de alta precisão para operações de 1, 5 e 15 minutos com win rate superior a 87%.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="demo-section">
+        <div class="container">
+            <h2>Veja o Sistema em Ação</h2>
+            <div class="demo-preview">
+                <p style="font-size: 1.2em; margin-bottom: 20px;">Interface Real do JBM Trader v2.3</p>
+                <p>Dashboard profissional com dados em tempo real, controles da IA e sinais automáticos. Sistema completo pronto para uso.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="testimonials">
+        <div class="container">
+            <h2>O Que Nossos Clientes Dizem</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial">
+                    <div class="testimonial-text">"Em 30 dias usando o JBM Trader, consegui um retorno de 47% na minha carteira. A IA realmente funciona!"</div>
+                    <div class="testimonial-author">- Carlos M., São Paulo</div>
+                </div>
+                <div class="testimonial">
+                    <div class="testimonial-text">"Finalmente um sistema que funciona de verdade. Os sinais são precisos e a interface é muito fácil de usar."</div>
+                    <div class="testimonial-author">- Ana L., Rio de Janeiro</div>
+                </div>
+                <div class="testimonial">
+                    <div class="testimonial-text">"Opero em 4 mercados diferentes com apenas um clique. O JBM Trader mudou completamente minha forma de investir."</div>
+                    <div class="testimonial-author">- Roberto S., Belo Horizonte</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <h2>Planos e Preços</h2>
+            <div class="pricing-cards">
+                <div class="pricing-card">
+                    <h3>Básico</h3>
+                    <div class="price">R$ 97</div>
+                    <div class="price-period">por mês</div>
+                    <ul class="features-list">
+                        <li>Acesso a 2 mercados</li>
+                        <li>Sinais básicos da IA</li>
+                        <li>Suporte por email</li>
+                        <li>Dashboard simplificado</li>
+                    </ul>
+                    <a href="#" class="cta-button">Escolher Plano</a>
+                </div>
+                
+                <div class="pricing-card featured">
+                    <h3>Profissional</h3>
+                    <div class="price">R$ 197</div>
+                    <div class="price-period">por mês</div>
+                    <ul class="features-list">
+                        <li>Acesso a todos os 4 mercados</li>
+                        <li>IA completa com 95% precisão</li>
+                        <li>Sinais a cada 15 segundos</li>
+                        <li>Suporte prioritário</li>
+                        <li>Dashboard completo</li>
+                        <li>Análises personalizadas</li>
+                    </ul>
+                    <a href="#" class="cta-button">Mais Popular</a>
+                </div>
+                
+                <div class="pricing-card">
+                    <h3>Enterprise</h3>
+                    <div class="price">R$ 397</div>
+                    <div class="price-period">por mês</div>
+                    <ul class="features-list">
+                        <li>Tudo do Profissional</li>
+                        <li>API personalizada</li>
+                        <li>Consultoria 1:1</li>
+                        <li>Configurações avançadas</li>
+                        <li>Suporte 24/7</li>
+                        <li>Relatórios detalhados</li>
+                    </ul>
+                    <a href="#" class="cta-button">Contatar Vendas</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 JBM Enterprize. Todos os direitos reservados.</p>
+            <p>Sistema JBM Trader v2.3 - Trading Multi-Mercado com IA Avançada</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling para links internos
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Animação de entrada para elementos
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Aplicar animação aos cards
+        document.querySelectorAll('.feature-card, .market-card, .pricing-card, .testimonial').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'all 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
+
