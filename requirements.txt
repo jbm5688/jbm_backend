@@ -5,3 +5,4 @@ gunicorn
 eventlet
 flask-sqlalchemy
 requests
+aiohttp==3.9.5
