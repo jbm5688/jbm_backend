@@ -11,3 +11,10 @@ flask_cors
 flask_sqlalchemy
 requests
 gunicorn
+socket-client
+certifi
+trio
+trio-websocket
+typing_extensions
+urllib3
+websocket-client
