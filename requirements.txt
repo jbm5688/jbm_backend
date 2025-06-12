@@ -12,8 +12,6 @@ flask_sqlalchemy
 requests
 gunicorn
 socket-client
-certifi
-trio
 trio-websocket
 typing_extensions
 urllib3
